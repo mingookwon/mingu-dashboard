@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MINGU AI COMMAND CENTER | 권민구 마스터 대시보드</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans KR', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #020617;
+      background-image:
+        radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.14) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: #f8fafc;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.55);
+    }
+    .glass-panel:hover {
+      border-color: rgba(56, 189, 248, 0.32);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.4);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.65);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.9);
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Top Command Header -->
+  <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <!-- Left Brand & Status -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-indigo-500 to-emerald-500 p-[1px] shadow-lg shadow-cyan-500/20 shrink-0">
+            <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+              <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-base sm:text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-indigo-200 bg-clip-text text-transparent">
+                MINGU AI COMMAND CENTER
+              </h1>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                LIVE
+              </span>
+              <span id="saveIndicator" class="text-[11px] text-slate-400 hidden sm:inline">자동 저장됨</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">권민구 대표 개인 AI 에이전트 & 마스터 대시보드 · 군포시 기준</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Controls: Countdown + GitHub Commit & Backup Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Tokyo Departure Countdown -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-cyan-500/30">
+          <div class="text-right">
+            <div class="text-[10px] font-semibold text-cyan-400">도쿄 ET672 (11/27 17:00)</div>
+            <div id="countdownText" class="text-xs font-bold font-mono text-white">계산 중...</div>
+          </div>
+          <span class="text-base">✈️</span>
+        </div>
+
+        <!-- GitHub Commit Code Copy -->
+        <button onclick="copyGithubCode()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition cursor-pointer">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          <span>GitHub 커밋용 코드 복사</span>
+        </button>
+
+        <!-- Download index.html -->
+        <button onclick="downloadIndexHtml()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition cursor-pointer">
+          <span>⬇️ index.html 다운로드</span>
+        </button>
+
+        <!-- JSON Backup & Restore -->
+        <button onclick="exportJsonBackup()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer">
+          JSON 백업
+        </button>
+        <label class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer">
+          JSON 복원
+          <input type="file" accept=".json" class="hidden" onchange="importJsonBackup(event)" />
+        </label>
+        <button onclick="openGithubGuideModal()" class="px-2.5 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 transition cursor-pointer" title="GitHub Pages 배포 가이드">
+          배포 가이드
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+      
+      <!-- Left 8 Columns: Core Operational Widgets -->
+      <div class="xl:col-span-8 space-y-6">
+        
+        <!-- Top KPI Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div class="glass-panel rounded-2xl p-4">
+            <div class="text-xs text-slate-400 flex items-center justify-between">
+              <span>마운자로 총 주문</span>
+              <span>💊</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1.5">
+              <span id="kpiMounjaroMonths" class="text-2xl font-extrabold text-white">9</span>
+              <span class="text-xs text-slate-400">개월</span>
+              <span id="kpiMounjaroPens" class="ml-auto text-xs font-bold px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300">36펜</span>
+            </div>
+            <div class="mt-1 text-[11px] text-slate-500">12/3 실크클리닉 오픈</div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4">
+            <div class="text-xs text-slate-400 flex items-center justify-between">
+              <span>장비 판매 목표</span>
+              <span>📸</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="kpiSalesGoal" class="text-2xl font-extrabold text-white">1,380</span>
+              <span class="text-xs text-slate-400">만 원</span>
+            </div>
+            <div id="kpiSalesSold" class="mt-1 text-[11px] text-emerald-400 font-medium">완료 0만 원 (0%)</div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4">
+            <div class="text-xs text-slate-400 flex items-center justify-between">
+              <span>남은 체크리스트</span>
+              <span>✅</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1.5">
+              <span id="kpiTodosRemain" class="text-2xl font-extrabold text-white">5</span>
+              <span class="text-xs text-slate-400">건 미완료</span>
+            </div>
+            <div class="mt-1 text-[11px] text-slate-500">정산 · 대차 · 택배 · 민원</div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4">
+            <div class="text-xs text-slate-400 flex items-center justify-between">
+              <span>일본 출장 베이스</span>
+              <span>🇯🇵</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-lg font-extrabold text-white">도쿄 · 나고야</span>
+            </div>
+            <div class="mt-1 text-[11px] text-indigo-300 font-mono">ET672/673 · YAXDBI</div>
+          </div>
+        </div>
+
+        <!-- Row 1: Mounjaro Tracker & Checklist -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- 1. Mounjaro Order Tracker -->
+          <section class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-3.5 border-b border-slate-800">
+                <div>
+                  <h2 class="text-base font-bold text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    1. 마운자로 주문 현황
+                  </h2>
+                  <p class="text-xs text-slate-400 mt-0.5">12/3 실크클리닉 예약 오픈 대기 · 1개월 = 4펜</p>
+                </div>
+                <button onclick="openAddMounjaroModal()" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 transition cursor-pointer">
+                  + 항목 추가
+                </button>
+              </div>
+              <div id="mounjaroList" class="mt-4 space-y-2.5"></div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between bg-slate-900/70 px-3.5 py-2.5 rounded-xl">
+              <span class="text-xs font-semibold text-slate-300">총 주문 합계</span>
+              <span id="mounjaroTotalBadge" class="text-sm font-extrabold text-cyan-300">9개월 (36펜)</span>
+            </div>
+          </section>
+
+          <!-- 3. Settlement, Dispatch, Petitions & Delivery Checklist -->
+          <section class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-3.5 border-b border-slate-800">
+                <div>
+                  <h2 class="text-base font-bold text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    3. 정산 · 배차 · 민원 · 택배 체크
+                  </h2>
+                  <p class="text-xs text-slate-400 mt-0.5">체크박스 클릭으로 완료 처리 및 항목 추가</p>
+                </div>
+                <span id="todoProgressBadge" class="text-xs font-bold text-amber-300">0/5 완료</span>
+              </div>
+
+              <!-- Quick Add Todo Input -->
+              <div class="mt-3 flex gap-2">
+                <input id="newTodoInput" type="text" placeholder="새 정산·업무 항목 입력 후 Enter..." class="flex-1 bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none" onkeypress="if(event.key==='Enter') addTodoItem()" />
+                <button onclick="addTodoItem()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white transition cursor-pointer shrink-0">
+                  추가
+                </button>
+              </div>
+
+              <div id="todoList" class="mt-3.5 space-y-2 max-h-[290px] overflow-y-auto pr-1"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 2. Used Equipment Sales Pipeline -->
+        <section class="glass-panel rounded-2xl p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3.5 border-b border-slate-800">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                2. 중고 장비 판매 파이프라인
+                <span id="equipmentCountTag" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">8종</span>
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">상태 배지를 클릭하면 [판매중 → 예약중 → 판매완료] 순환 전환됩니다</p>
+            </div>
+            <button onclick="openAddEquipmentModal()" class="self-start sm:self-auto px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition cursor-pointer">
+              + 장비 추가
+            </button>
+          </div>
+
+          <!-- Financial Summary & Progress Bar -->
+          <div class="mt-4 p-4 rounded-xl bg-slate-900/85 border border-slate-800">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs mb-2">
+              <div class="flex flex-wrap items-center gap-4">
+                <span>합산 목표: <strong id="salesTotalText" class="text-white">1,380만 원</strong></span>
+                <span>판매 완료: <strong id="salesDoneText" class="text-emerald-400">0만 원</strong></span>
+                <span>예약중: <strong id="salesReservedText" class="text-amber-400">0만 원</strong></span>
+                <span>잔여 금액: <strong id="salesRemainText" class="text-sky-300">1,380만 원</strong></span>
+              </div>
+              <span id="salesRateText" class="font-extrabold text-emerald-400">0.0% 달성</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden flex">
+              <div id="barSold" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300" style="width: 0%"></div>
+              <div id="barReserved" class="bg-amber-400/80 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Equipment Cards Grid -->
+          <div id="equipmentGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        </section>
+
+        <!-- 4. Japan Trip & Schedule Base -->
+        <section class="glass-panel rounded-2xl p-5">
+          <div class="flex items-center justify-between pb-3.5 border-b border-slate-800">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                4. 일본 출장 · 여행 베이스 (도쿄 & 나고야)
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">항공편 · 숙박 예약 · 현지 일정 타임라인</p>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+            <div class="p-4 rounded-xl bg-slate-900/85 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-md font-bold bg-sky-500/15 text-sky-300 border border-sky-500/25">도쿄 일정 · 11/27(금) ~ 12/2(수)</span>
+                <span class="font-mono text-[11px] text-amber-300 font-bold">PNR: YAXDBI</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-300 leading-relaxed pt-1">
+                <li>• <strong>출국편:</strong> 11/27(금) 17:00 ICN → 19:25 NRT (ET672) · <strong>13:00 이전 군포 출발 권장</strong></li>
+                <li>• <strong>11/28(토):</strong> 11:45 GRAN CYBER CAFÉ BAGUS Shinjuku (플랫 부스 24시간 팩)</li>
+                <li>• <strong>11/29(일)~12/2(수):</strong> Anshin Oyado Tokyo Man Shinjuku 연박</li>
+                <li>• <strong>귀국편:</strong> 12/2(수) 20:30 NRT → 22:55 ICN (ET673)</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/85 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-md font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">나고야 · 후속 일정</span>
+                <span class="text-[11px] text-emerald-400 font-semibold">12/3 예약 오픈</span>
+              </div>
+              <ul class="space-y-1.5 text-slate-300 leading-relaxed pt-1">
+                <li>• <strong>12/3(목)~:</strong> 귀국 직후 실크클리닉 마운자로 예약 오픈 및 나고야 일정 연계</li>
+                <li>• <strong>12/12(토)~13(일):</strong> 나고야 코이코이 일정</li>
+                <li>• <strong>출국 체크:</strong> 여권, Visit Japan Web QR, 일본 eSIM, 110V 어댑터, 보조배터리</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Right 4 Columns: Embedded AI Assistant Agent -->
+      <aside class="xl:col-span-4 xl:sticky xl:top-20">
+        <section class="glass-panel rounded-2xl border border-indigo-500/30 flex flex-col h-[690px] max-h-[84vh] overflow-hidden">
+          <!-- Agent Header -->
+          <div class="p-4 border-b border-slate-800 bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 text-base">
+                🤖
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h2 class="text-sm font-bold text-white">민구 AI 비서 에이전트</h2>
+                  <span class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-indigo-500/20 text-indigo-300">AGENT</span>
+                </div>
+                <p class="text-[11px] text-slate-400">로컬 명령 즉시 실행 + Gemini API 브리핑</p>
+              </div>
+            </div>
+            <button onclick="toggleApiSettings()" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer">
+              API 설정
+            </button>
+          </div>
+
+          <!-- Gemini API Key Settings Drawer -->
+          <div id="apiSettingsPanel" class="hidden p-3.5 bg-slate-900/95 border-b border-slate-800 text-xs space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-cyan-300">Gemini API 키 연동 (선택 사항)</span>
+              <button onclick="toggleApiSettings()" class="text-slate-400 hover:text-white cursor-pointer">✕</button>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Google AI Studio 키를 저장하면 일반 자연어 질문에도 응답합니다. 미입력 시에도 대시보드 제어 및 요약 브리핑은 100% 작동합니다.
+            </p>
+            <div class="flex gap-1.5">
+              <input id="geminiKeyInput" type="password" placeholder="AIzaSy..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-cyan-500" />
+              <button onclick="saveGeminiKey()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">저장</button>
+            </div>
+          </div>
+
+          <!-- Quick Action Chips -->
+          <div class="px-3.5 py-2.5 border-b border-slate-800/80 bg-slate-900/60 flex gap-1.5 overflow-x-auto">
+            <button onclick="runQuickPrompt('오늘 핵심 브리핑')" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 hover:bg-cyan-500/20 text-cyan-300 border border-slate-700 transition cursor-pointer">
+              📋 오늘 핵심 브리핑
+            </button>
+            <button onclick="runQuickPrompt('판매 잔여 금액')" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 hover:bg-emerald-500/20 text-emerald-300 border border-slate-700 transition cursor-pointer">
+              💰 판매 잔여 금액
+            </button>
+            <button onclick="runQuickPrompt('마운자로 수량 요약')" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 transition cursor-pointer">
+              💊 마운자로 수량 요약
+            </button>
+          </div>
+
+          <!-- Chat Log Area -->
+          <div id="chatLog" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+            <div class="p-3.5 rounded-2xl rounded-tl-none bg-slate-900/90 border border-slate-800 text-slate-200 leading-relaxed">
+              <p class="font-bold text-cyan-300 mb-1">MINGU AI 커맨드 센터가 준비되었습니다.</p>
+              <p>아래처럼 명령하시면 대시보드를 즉시 업데이트하거나 브리핑해 드립니다.</p>
+              <ul class="mt-1.5 space-y-1 text-slate-400">
+                <li>• 상태 변경: <code class="text-emerald-300">"A7M5 판매완료"</code>, <code class="text-amber-300">"루믹스 S9 예약중"</code></li>
+                <li>• 정산 완료: <code class="text-emerald-300">"찬일이형 정산 완료"</code></li>
+                <li>• 브리핑 조회: <code class="text-cyan-300">"오늘 핵심 브리핑"</code>, <code class="text-cyan-300">"판매 잔여 금액"</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Chat Input Form -->
+          <form onsubmit="handleChatSubmit(event)" class="p-3 border-t border-slate-800 bg-slate-950/90 flex gap-2">
+            <input id="chatInput" type="text" placeholder="예: A7M5 판매완료 / 오늘 핵심 브리핑..." class="flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none" autocomplete="off" />
+            <button type="submit" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold shadow-lg transition cursor-pointer shrink-0">
+              전송
+            </button>
+          </form>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal 1: Add Mounjaro Item -->
+  <div id="mounjaroModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-md w-full p-6 border border-slate-700">
+      <h3 class="text-base font-bold text-white pb-3 border-b border-slate-800">마운자로 주문 항목 추가</h3>
+      <form onsubmit="saveNewMounjaro(event)" class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">주문자 / 구분</label>
+          <input id="mjLabelInput" type="text" required placeholder="예: 단골 추가, 본인 예비분" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">용량</label>
+            <select id="mjDoseInput" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              <option value="2.5mg">2.5mg</option>
+              <option value="5mg" selected>5mg</option>
+              <option value="7.5mg">7.5mg</option>
+              <option value="10mg">10mg</option>
+              <option value="12.5mg">12.5mg</option>
+              <option value="15mg">15mg</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">개월 수 (1개월=4펜)</label>
+            <input id="mjMonthsInput" type="number" min="1" max="24" value="1" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white" />
+          </div>
+        </div>
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('mounjaroModal')" class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer">취소</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold cursor-pointer">추가</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Equipment Item -->
+  <div id="equipmentModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-md w-full p-6 border border-slate-700">
+      <h3 class="text-base font-bold text-white pb-3 border-b border-slate-800">중고 판매 장비 추가</h3>
+      <form onsubmit="saveNewEquipment(event)" class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">장비명</label>
+          <input id="eqNameInput" type="text" required placeholder="예: Sony FE 24-70mm GM2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">목표가 (만 원)</label>
+            <input id="eqPriceInput" type="number" min="1" required placeholder="200" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">초기 상태</label>
+            <select id="eqStatusInput" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              <option value="판매중">판매중</option>
+              <option value="예약중">예약중</option>
+              <option value="판매완료">판매완료</option>
+            </select>
+          </div>
+        </div>
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('equipmentModal')" class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer">취소</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">등록</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: GitHub Pages Deployment Guide -->
+  <div id="githubGuideModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-xl w-full p-6 border border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white">🚀 GitHub Pages 웹 배포 방법 (1분 완료)</h3>
+        <button onclick="closeModal('githubGuideModal')" class="text-slate-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+      <ol class="mt-4 space-y-2.5 text-xs text-slate-300 list-decimal list-inside bg-slate-900/90 p-4 rounded-xl border border-slate-800 leading-relaxed">
+        <li>상단 <strong>[GitHub 커밋용 코드 복사]</strong> 또는 <strong>[index.html 다운로드]</strong> 버튼을 누릅니다.</li>
+        <li>GitHub에서 새 저장소(<code class="text-cyan-300">mingu-dashboard</code>)를 생성한 뒤 <strong>uploading an existing file</strong>로 <code class="text-emerald-300 font-bold">index.html</code>을 올리고 Commit 합니다.</li>
+        <li>저장소 <strong>Settings → Pages</strong>에서 Branch를 <code class="text-emerald-300">main</code>으로 선택하고 Save를 누르면 전용 웹 주소가 생성됩니다.</li>
+        <li>스마트폰 크롬에서 해당 주소를 열고 <strong>[홈 화면에 추가]</strong>를 누르면 앱처럼 바로 실행됩니다.</li>
+      </ol>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="copyGithubCode()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer">코드 복사</button>
+        <button onclick="closeModal('githubGuideModal')" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs cursor-pointer">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. INITIAL MASTER DATA (2026-11-26 기준)
+    // =========================================================================
+    const STORAGE_KEY = 'mingu_command_center_master_v2';
+
+    const DEFAULT_STATE = {
+      mounjaro: [
+        { id: 'm1', label: '단골 주문', dose: '5mg', months: 3 },
+        { id: 'm2', label: '형 지인', dose: '5mg', months: 2 },
+        { id: 'm3', label: '기존 계획 (고용량)', dose: '10mg', months: 3 },
+        { id: 'm4', label: '기존 계획 (저용량)', dose: '2.5mg', months: 1 }
+      ],
+      sales: [
+        { id: 's1', name: 'Sony A7M5', price: 270, status: '판매중' },
+        { id: 's2', name: 'Lumix L10 티타늄 골드', price: 220, status: '판매중' },
+        { id: 's3', name: 'Lumix L10 일본판', price: 195, status: '판매중' },
+        { id: 's4', name: 'OPPO Find X9 Ultra (16G/1TB)', price: 195, status: '판매중' },
+        { id: 's5', name: 'Lumix L10 홍콩판', price: 180, status: '판매중' },
+        { id: 's6', name: 'Lumix S9', price: 130, status: '판매중' },
+        { id: 's7', name: '샤오미 17 울트라 라이카 에디션', price: 120, status: '판매중' },
+        { id: 's8', name: '헬로키티 아이템', price: 70, status: '판매중' }
+      ],
+      todos: [
+        { id: 't1', text: '찬일이형 2만 원 정산 마무리 (출국 전 처리)', done: false },
+        { id: 't2', text: '용성국제여행사 부재 기간(11/27~12/2) 정기 노선 및 예비 차량 대차 인계 마감', done: false },
+        { id: 't3', text: '알리익스프레스 택배 수령 및 자동 구매확정 임박 건 점검', done: false },
+        { id: 't4', text: '국민신문고 민원 답변 확인 (구갈동 한양아파트 인근 신호등 / 당정역 흡연)', done: false },
+        { id: 't5', text: '11/27(금) 첫날 도쿄 숙소 최종 체크', done: false }
+      ]
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const parsed = JSON.parse(saved);
+        return {
+          mounjaro: Array.isArray(parsed.mounjaro) ? parsed.mounjaro : DEFAULT_STATE.mounjaro,
+          sales: Array.isArray(parsed.sales) ? parsed.sales : DEFAULT_STATE.sales,
+          todos: Array.isArray(parsed.todos) ? parsed.todos : DEFAULT_STATE.todos
+        };
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        const indicator = document.getElementById('saveIndicator');
+        if (indicator) indicator.textContent = `저장됨 (${timeStr})`;
+        renderAll();
+      } catch (e) {
+        showToast('저장 중 오류가 발생했습니다.', 'error');
+      }
+    }
+
+    // =========================================================================
+    // 2. COUNTDOWN TIMER (2026-11-27 17:00 KST ET672)
+    // =========================================================================
+    function updateCountdown() {
+      const target = new Date('2026-11-27T17:00:00+09:00').getTime();
+      const now = Date.now();
+      const diff = target - now;
+      const el = document.getElementById('countdownText');
+      if (!el) return;
+
+      if (diff <= 0) {
+        el.textContent = '도쿄 출국 시각 도래 ✈️';
+        el.className = 'text-xs font-bold text-emerald-400';
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      el.textContent = `${d > 0 ? 'D-' + d + ' ' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    // =========================================================================
+    // 3. RENDERING ALL WIDGETS
+    // =========================================================================
+    function renderAll() {
+      renderMounjaro();
+      renderSales();
+      renderTodos();
+      updateKPIs();
+    }
+
+    function updateKPIs() {
+      const totalMonths = state.mounjaro.reduce((acc, m) => acc + Number(m.months || 0), 0);
+      document.getElementById('kpiMounjaroMonths').textContent = totalMonths;
+      document.getElementById('kpiMounjaroPens').textContent = `${totalMonths * 4}펜`;
+
+      const goal = state.sales.reduce((acc, s) => acc + Number(s.price || 0), 0);
+      const sold = state.sales.filter(s => s.status === '판매완료').reduce((acc, s) => acc + Number(s.price || 0), 0);
+      const pct = goal > 0 ? ((sold / goal) * 100).toFixed(1) : '0.0';
+      document.getElementById('kpiSalesGoal').textContent = goal.toLocaleString();
+      document.getElementById('kpiSalesSold').textContent = `완료 ${sold.toLocaleString()}만 원 (${pct}%)`;
+
+      const remainTodos = state.todos.filter(t => !t.done).length;
+      document.getElementById('kpiTodosRemain').textContent = remainTodos;
+    }
+
+    // 1. Mounjaro Render
+    function renderMounjaro() {
+      const container = document.getElementById('mounjaroList');
+      let totalMonths = 0;
+
+      container.innerHTML = state.mounjaro.map(item => {
+        const months = Number(item.months || 0);
+        const pens = months * 4;
+        totalMonths += months;
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-900/85 border border-slate-800 hover:border-cyan-500/40 transition flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">${escapeHtml(item.dose)}</span>
+                <span class="text-xs font-bold text-white truncate">${escapeHtml(item.label)}</span>
+              </div>
+              <div class="text-xs text-slate-400 mt-1.5">
+                <strong class="text-emerald-400">${months}개월</strong> (${pens}펜)
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="adjustMounjaro('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm cursor-pointer">-</button>
+              <button onclick="adjustMounjaro('${item.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm cursor-pointer">+</button>
+              <button onclick="deleteMounjaro('${item.id}')" class="ml-1 text-slate-500 hover:text-rose-400 text-xs px-1 cursor-pointer" title="삭제">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('mounjaroTotalBadge').textContent = `${totalMonths}개월 (${totalMonths * 4}펜)`;
+    }
+
+    function adjustMounjaro(id, delta) {
+      const target = state.mounjaro.find(m => m.id === id);
+      if (!target) return;
+      target.months = Math.max(0, Number(target.months) + delta);
+      saveState();
+    }
+
+    function deleteMounjaro(id) {
+      state.mounjaro = state.mounjaro.filter(m => m.id !== id);
+      saveState();
+      showToast('마운자로 항목이 삭제되었습니다.', 'info');
+    }
+
+    function openAddMounjaroModal() {
+      document.getElementById('mjLabelInput').value = '';
+      document.getElementById('mjDoseInput').value = '5mg';
+      document.getElementById('mjMonthsInput').value = 1;
+      openModal('mounjaroModal');
+    }
+
+    function saveNewMounjaro(e) {
+      e.preventDefault();
+      const label = document.getElementById('mjLabelInput').value.trim();
+      const dose = document.getElementById('mjDoseInput').value;
+      const months = parseInt(document.getElementById('mjMonthsInput').value, 10) || 1;
+      state.mounjaro.push({ id: 'm-' + Date.now(), label, dose, months });
+      closeModal('mounjaroModal');
+      saveState();
+      showToast(`[${label}] 항목이 추가되었습니다.`, 'success');
+    }
+
+    // 2. Sales Pipeline Render
+    function renderSales() {
+      const grid = document.getElementById('equipmentGrid');
+      let totalGoal = 0;
+      let totalSold = 0;
+      let totalReserved = 0;
+
+      grid.innerHTML = state.sales.map(item => {
+        const price = Number(item.price || 0);
+        totalGoal += price;
+        if (item.status === '판매완료') totalSold += price;
+        if (item.status === '예약중') totalReserved += price;
+
+        let badgeClass = 'bg-sky-500/15 text-sky-300 border-sky-500/30 hover:bg-sky-500/25';
+        let cardBorder = 'border-slate-800 hover:border-slate-700';
+        if (item.status === '예약중') {
+          badgeClass = 'bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/25';
+          cardBorder = 'border-amber-500/35';
+        } else if (item.status === '판매완료') {
+          badgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30';
+          cardBorder = 'border-emerald-500/35 opacity-80';
+        }
+
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-900/85 border ${cardBorder} transition flex flex-col justify-between gap-2.5">
+            <div>
+              <div class="flex items-center justify-between gap-1">
+                <button onclick="cycleSaleStatus('${item.id}')" class="px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${badgeClass} transition cursor-pointer" title="클릭하여 상태 전환">
+                  ${escapeHtml(item.status)}
+                </button>
+                <button onclick="deleteEquipment('${item.id}')" class="text-slate-500 hover:text-rose-400 text-xs px-1 cursor-pointer" title="삭제">✕</button>
+              </div>
+              <h3 class="mt-2.5 text-xs font-bold leading-snug ${item.status === '판매완료' ? 'line-through text-slate-400' : 'text-white'}">
+                ${escapeHtml(item.name)}
+              </h3>
+            </div>
+            <div class="pt-2 border-t border-slate-800/80 flex items-baseline justify-between">
+              <span class="text-[10px] text-slate-500">목표가</span>
+              <span class="text-sm font-extrabold ${item.status === '판매완료' ? 'text-emerald-400' : 'text-white'}">${price.toLocaleString()}만 원</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const remain = totalGoal - totalSold;
+      const soldPct = totalGoal > 0 ? (totalSold / totalGoal) * 100 : 0;
+      const resPct = totalGoal > 0 ? (totalReserved / totalGoal) * 100 : 0;
+
+      document.getElementById('equipmentCountTag').textContent = `${state.sales.length}종`;
+      document.getElementById('salesTotalText').textContent = `${totalGoal.toLocaleString()}만 원`;
+      document.getElementById('salesDoneText').textContent = `${totalSold.toLocaleString()}만 원`;
+      document.getElementById('salesReservedText').textContent = `${totalReserved.toLocaleString()}만 원`;
+      document.getElementById('salesRemainText').textContent = `${remain.toLocaleString()}만 원`;
+      document.getElementById('salesRateText').textContent = `${soldPct.toFixed(1)}% 달성`;
+      document.getElementById('barSold').style.width = `${Math.min(100, soldPct)}%`;
+      document.getElementById('barReserved').style.width = `${Math.min(100 - soldPct, resPct)}%`;
+    }
+
+    function cycleSaleStatus(id) {
+      const order = ['판매중', '예약중', '판매완료'];
+      const target = state.sales.find(s => s.id === id);
+      if (!target) return;
+      target.status = order[(order.indexOf(target.status) + 1) % order.length];
+      saveState();
+      showToast(`[${target.name}] → ${target.status}`, 'success');
+    }
+
+    function openAddEquipmentModal() {
+      document.getElementById('eqNameInput').value = '';
+      document.getElementById('eqPriceInput').value = '';
+      document.getElementById('eqStatusInput').value = '판매중';
+      openModal('equipmentModal');
+    }
+
+    function saveNewEquipment(e) {
+      e.preventDefault();
+      const name = document.getElementById('eqNameInput').value.trim();
+      const price = parseInt(document.getElementById('eqPriceInput').value, 10) || 0;
+      const status = document.getElementById('eqStatusInput').value;
+      state.sales.push({ id: 's-' + Date.now(), name, price, status });
+      closeModal('equipmentModal');
+      saveState();
+      showToast(`[${name}] 장비가 등록되었습니다.`, 'success');
+    }
+
+    function deleteEquipment(id) {
+      state.sales = state.sales.filter(s => s.id !== id);
+      saveState();
+      showToast('장비 항목이 삭제되었습니다.', 'info');
+    }
+
+    // 3. Todos Render
+    function renderTodos() {
+      const list = document.getElementById('todoList');
+      let doneCount = 0;
+
+      list.innerHTML = state.todos.map(item => {
+        if (item.done) doneCount++;
+        return `
+          <div class="p-2.5 rounded-xl border transition flex items-center justify-between gap-2 ${
+            item.done ? 'bg-slate-900/40 border-slate-800/50 opacity-60' : 'bg-slate-900/85 border-slate-800 hover:border-amber-500/35'
+          }">
+            <label class="flex items-start gap-2.5 cursor-pointer flex-1 text-xs leading-relaxed">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTodo('${item.id}')" class="mt-0.5 w-4 h-4 rounded accent-amber-500 cursor-pointer shrink-0" />
+              <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-200 font-medium'}">${escapeHtml(item.text)}</span>
+            </label>
+            <button onclick="deleteTodo('${item.id}')" class="text-slate-500 hover:text-rose-400 text-xs px-1.5 cursor-pointer shrink-0" title="삭제">✕</button>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('todoProgressBadge').textContent = `${doneCount}/${state.todos.length} 완료`;
+    }
+
+    function toggleTodo(id) {
+      const target = state.todos.find(t => t.id === id);
+      if (!target) return;
+      target.done = !target.done;
+      saveState();
+    }
+
+    function addTodoItem() {
+      const input = document.getElementById('newTodoInput');
+      const text = input.value.trim();
+      if (!text) return;
+      state.todos.unshift({ id: 't-' + Date.now(), text, done: false });
+      input.value = '';
+      saveState();
+      showToast('새 체크리스트 항목이 추가되었습니다.', 'success');
+    }
+
+    function deleteTodo(id) {
+      state.todos = state.todos.filter(t => t.id !== id);
+      saveState();
+    }
+
+    // =========================================================================
+    // 4. EMBEDDED AI ASSISTANT AGENT (Local Instant Commands + Gemini API)
+    // =========================================================================
+    function toggleApiSettings() {
+      const panel = document.getElementById('apiSettingsPanel');
+      panel.classList.toggle('hidden');
+      document.getElementById('geminiKeyInput').value = localStorage.getItem('mingu_gemini_api_key') || '';
+    }
+
+    function saveGeminiKey() {
+      const key = document.getElementById('geminiKeyInput').value.trim();
+      localStorage.setItem('mingu_gemini_api_key', key);
+      document.getElementById('apiSettingsPanel').classList.add('hidden');
+      showToast(key ? 'Gemini API 키가 저장되었습니다.' : 'API 키가 해제되었습니다.', 'success');
+    }
+
+    function runQuickPrompt(text) {
+      document.getElementById('chatInput').value = text;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      appendChat('user', msg);
+      input.value = '';
+
+      // 1) Local Instant Action Commands
+      const actionReply = executeLocalCommand(msg);
+      if (actionReply) {
+        appendChat('assistant', actionReply);
+        return;
+      }
+
+      // 2) Gemini API Call if key exists, otherwise smart local briefing
+      const userApiKey = localStorage.getItem('mingu_gemini_api_key');
+      if (!userApiKey) {
+        appendChat('assistant', buildLocalBriefing(msg));
+        return;
+      }
+
+      const loadingId = appendLoadingChat();
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${userApiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `너는 권민구 대표의 개인 AI 비서다. 아래 실시간 대시보드 데이터를 기준으로 한국어로 간결하고 실무적으로 답하라.\n\n[대시보드 JSON]\n${JSON.stringify(state)}\n\n[질문]\n${msg}`
+              }]
+            }]
+          })
+        });
+        const data = await res.json();
+        removeElement(loadingId);
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || buildLocalBriefing(msg);
+        appendChat('assistant', reply);
+      } catch (err) {
+        removeElement(loadingId);
+        appendChat('assistant', buildLocalBriefing(msg));
+      }
+    }
+
+    function executeLocalCommand(msg) {
+      const norm = msg.replace(/\s+/g, '').toLowerCase();
+
+      // Sales status update
+      const isSold = norm.includes('판매완료') || norm.includes('팔렸') || norm.includes('완료처리');
+      const isReserved = norm.includes('예약중') || norm.includes('예약처리');
+      const isSelling = norm.includes('판매중으로');
+
+      if (isSold || isReserved || isSelling) {
+        for (const item of state.sales) {
+          const tokens = item.name.toLowerCase().split(/\s+/);
+          const itemCompact = item.name.replace(/\s+/g, '').toLowerCase();
+          if (norm.includes(itemCompact) || tokens.some(t => t.length >= 2 && norm.includes(t))) {
+            item.status = isSold ? '판매완료' : (isReserved ? '예약중' : '판매중');
+            saveState();
+            return `✅ 대시보드를 즉시 업데이트했습니다.\n• 품목: **${item.name}** (${item.price.toLocaleString()}만 원)\n• 변경 상태: **${item.status}**`;
+          }
+        }
+      }
+
+      // Chan-il settlement completion
+      if (norm.includes('찬일') && (norm.includes('완료') || norm.includes('받았') || norm.includes('끝'))) {
+        const todo = state.todos.find(t => t.text.includes('찬일'));
+        if (todo) {
+          todo.done = true;
+          saveState();
+          return `✅ **[${todo.text}]** 항목을 완료 처리했습니다.`;
+        }
+      }
+
+      return null;
+    }
+
+    function buildLocalBriefing(msg) {
+      const totalMonths = state.mounjaro.reduce((a, b) => a + Number(b.months || 0), 0);
+      const totalGoal = state.sales.reduce((a, b) => a + Number(b.price || 0), 0);
+      const totalSold = state.sales.filter(s => s.status === '판매완료').reduce((a, b) => a + Number(b.price || 0), 0);
+      const totalReserved = state.sales.filter(s => s.status === '예약중').reduce((a, b) => a + Number(b.price || 0), 0);
+      const remainAmount = totalGoal - totalSold;
+      const pendingTodos = state.todos.filter(t => !t.done);
+
+      if (msg.includes('판매') || msg.includes('잔여') || msg.includes('금액')) {
+        return `💰 **중고 장비 판매 파이프라인 요약**\n• 목표 총액: **${totalGoal.toLocaleString()}만 원** (${state.sales.length}종)\n• 판매 완료: **${totalSold.toLocaleString()}만 원**\n• 예약 진행: **${totalReserved.toLocaleString()}만 원**\n• **잔여 회수 목표: ${remainAmount.toLocaleString()}만 원**`;
+      }
+
+      if (msg.includes('마운자로') || msg.includes('수량')) {
+        const list = state.mounjaro.map(m => `• ${m.label}: ${m.dose} · ${m.months}개월 (${m.months * 4}펜)`).join('\n');
+        return `💊 **마운자로 주문 수량 요약 (12/3 오픈)**\n${list}\n\n👉 **최종 합계: ${totalMonths}개월 (${totalMonths * 4}펜)**`;
+      }
+
+      const todoLines = pendingTodos.length > 0
+        ? pendingTodos.map(t => `• ${t.text}`).join('\n')
+        : '• 모든 체크리스트가 완료되었습니다.';
+
+      return `📋 **오늘 핵심 브리핑 요약**\n\n**1. 미완료 체크리스트 (${pendingTodos.length}건)**\n${todoLines}\n\n**2. 자산 판매 & 마운자로**\n• 장비 판매: 완료 ${totalSold.toLocaleString()}만 / 잔여 **${remainAmount.toLocaleString()}만 원**\n• 마운자로: 총 **${totalMonths}개월 (${totalMonths * 4}펜)** 대기\n\n**3. 도쿄 출국 (11/27 내일)**\n• ET672 (17:00 ICN → 19:25 NRT / PNR: \`YAXDBI\`) · 13:00 이전 군포 출발 권장`;
+    }
+
+    function appendChat(role, text) {
+      const log = document.getElementById('chatLog');
+      const div = document.createElement('div');
+      const htmlText = escapeHtml(text)
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+        .replace(/`(.*?)`/g, '<code class="px-1 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono">$1</code>')
+        .replace(/\n/g, '<br>');
+
+      if (role === 'user') {
+        div.className = 'p-3 rounded-2xl rounded-tr-none bg-gradient-to-r from-cyan-600 to-indigo-600 text-white ml-8 leading-relaxed shadow';
+      } else {
+        div.className = 'p-3.5 rounded-2xl rounded-tl-none bg-slate-900/90 border border-slate-800 text-slate-200 mr-4 leading-relaxed';
+      }
+      div.innerHTML = htmlText;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function appendLoadingChat() {
+      const log = document.getElementById('chatLog');
+      const id = 'loading-' + Date.now();
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = 'p-3 rounded-2xl rounded-tl-none bg-slate-900/90 border border-slate-800 text-cyan-300 mr-4 animate-pulse';
+      div.textContent = 'AI 비서가 브리핑을 작성 중입니다...';
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+      return id;
+    }
+
+    function removeElement(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    // =========================================================================
+    // 5. GITHUB COMMIT EXPORT, BACKUP & MODAL HELPERS
+    // =========================================================================
+    function copyGithubCode() {
+      const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const textarea = document.createElement('textarea');
+      textarea.value = fullHtml;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast('GitHub 커밋용 전체 HTML 코드가 클립보드에 복사되었습니다!', 'success');
+      } catch (err) {
+        showToast('복사에 실패했습니다. index.html 다운로드 버튼을 이용해 주세요.', 'error');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function downloadIndexHtml() {
+      const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('GitHub Pages 배포용 index.html 파일이 다운로드되었습니다.', 'success');
+    }
+
+    function exportJsonBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mingu-dashboard-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('JSON 백업 파일이 저장되었습니다.', 'success');
+    }
+
+    function importJsonBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.mounjaro && parsed.sales && parsed.todos) {
+            state = parsed;
+            saveState();
+            showToast('JSON 백업 데이터가 복원되었습니다!', 'success');
+          } else {
+            showToast('유효한 대시보드 백업 파일이 아닙니다.', 'error');
+          }
+        } catch {
+          showToast('JSON 파일을 읽는 중 오류가 발생했습니다.', 'error');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function openGithubGuideModal() {
+      openModal('githubGuideModal');
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('hidden');
+      el.classList.add('flex');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const div = document.createElement('div');
+      let colorClass = 'border-cyan-500/40 text-cyan-200';
+      if (type === 'success') colorClass = 'border-emerald-500/40 text-emerald-200';
+      if (type === 'error') colorClass = 'border-rose-500/40 text-rose-200';
+
+      div.className = `pointer-events-auto px-4 py-2.5 rounded-xl bg-slate-900/95 border ${colorClass} shadow-xl text-xs font-semibold backdrop-blur-md transition-opacity duration-300`;
+      div.textContent = msg;
+      container.appendChild(div);
+      setTimeout(() => {
+        div.style.opacity = '0';
+        setTimeout(() => div.remove(), 300);
+      }, 2600);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  </script>
+</body>
+</html>
