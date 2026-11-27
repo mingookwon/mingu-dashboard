@@ -295,9 +295,9 @@
                 <span class="font-mono text-[11px] text-amber-300 font-bold">PNR: YAXDBI</span>
               </div>
               <ul class="space-y-1.5 text-slate-300 leading-relaxed pt-1">
-                <li>• <strong>출국편:</strong> 11/27(금) 17:00 ICN → 19:25 NRT (ET672) · <strong>13:00 이전 군포 출발 권장</strong></li>
-                <li>• <strong>11/28(토):</strong> 11:45 GRAN CYBER CAFÉ BAGUS Shinjuku (플랫 부스 24시간 팩)</li>
-                <li>• <strong>11/29(일)~12/2(수):</strong> Anshin Oyado Tokyo Man Shinjuku 연박</li>
+                <li>• <strong>출국편:</strong> 11/27(금) 17:00 ICN → 19:25 NRT (ET672)<a href="https://www.google.com/maps/search/?api=1&query=Narita%20International%20Airport" target="_blank" rel="noopener" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/25 hover:bg-sky-500/30">🗺️ 나리타</a> · <strong>13:00 이전 군포 출발 권장</strong></li>
+                <li>• <strong>11/28(토):</strong> 11:45 GRAN CYBER CAFÉ BAGUS Shinjuku (플랫 부스 24시간 팩)<a href="https://www.google.com/maps/search/?api=1&query=GRAN%20CYBER%20CAFE%20BAGUS%20Shinjuku" target="_blank" rel="noopener" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/25 hover:bg-sky-500/30">🗺️ 지도</a></li>
+                <li>• <strong>11/29(일)~12/2(수):</strong> Anshin Oyado Tokyo Man Shinjuku 연박<a href="https://www.google.com/maps/search/?api=1&query=Anshin%20Oyado%20Tokyo%20Shinjuku" target="_blank" rel="noopener" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/25 hover:bg-sky-500/30">🗺️ 지도</a></li>
                 <li>• <strong>귀국편:</strong> 12/2(수) 20:30 NRT → 22:55 ICN (ET673)</li>
               </ul>
             </div>
@@ -316,7 +316,7 @@
             <div class="md:col-span-2 p-4 rounded-xl bg-slate-900/85 border border-amber-500/30 space-y-2">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span class="px-2.5 py-0.5 rounded-md font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">✨ 롯폰기 힐스 게야키자카 일루미네이션</span>
-                <span class="text-[11px] text-amber-300 font-semibold">11/5~12/25 · 17:00~22:00 · 무료</span>
+                <span class="flex items-center gap-1.5"><span class="text-[11px] text-amber-300 font-semibold">11/5~12/25 · 17:00~22:00 · 무료</span><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&destination=%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%81%91%E3%82%84%E3%81%8D%E5%9D%82%E9%80%9A%E3%82%8A" target="_blank" rel="noopener" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500 text-slate-950 hover:bg-amber-400">🧭 길찾기</a></span>
               </div>
               <ul class="space-y-1.5 text-slate-300 leading-relaxed pt-1">
                 <li>• <strong>추천 일정:</strong> 11/28~12/2 신주쿠 연박 중 하루 저녁 (첫날 11/27은 NRT 19:25 도착이라 빠듯)</li>
@@ -325,10 +325,14 @@
                 <li>• <strong>크리스마스 마켓:</strong> 11/21~12/25 11:00~21:00 → 21시 전 도착 권장</li>
                 <li>• <strong>포토 스팟:</strong> 엠포리오 아르마니 · 츠타야 서점 · 테레비아사히 앞 (차도 진입 금지)</li>
               </ul>
-              <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 leading-relaxed">
-                <span class="text-slate-300 font-semibold">도쿄 체류 중 볼 수 있는 곳:</span>
-                도쿄 미드타운 (11/26~12/25) · 마루노우치 거리 (11/12~2/14) · WHITE KITTE (11/19~12/25) · 에비스 가든 플레이스 (11/14~2/28) · 우에노 크리스마스 어드벤트 (11/6~12/25) · 오모테산도 (12/1~, 12/1·2만 가능)
-                <span class="text-slate-500">— 시부야 푸른 동굴은 12/11 시작이라 이번 일정엔 불가</span>
+              <div class="pt-3 border-t border-slate-800">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="text-[12px] font-bold text-white">🧭 지금 도쿄 일루미네이션 추천 <span id="tokyoNowText" class="ml-1 text-[10px] font-medium text-slate-400"></span></span>
+                  <button onclick="renderTokyoRecommend(true)" class="px-2 py-1 rounded-lg text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer">새로고침</button>
+                </div>
+                <div id="tokyoCourse" class="mb-2"></div>
+                <div id="tokyoRecommend" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                <p class="mt-2 text-[10px] text-slate-500">점등 기간은 2026-27 시즌 발표 기준 · 롯폰기 외 점등 시간은 현장·공식 사이트 확인</p>
               </div>
             </div>
           </div>
@@ -383,6 +387,9 @@
             </button>
             <button onclick="runQuickPrompt('마운자로 수량 요약')" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-slate-700 transition cursor-pointer">
               💊 마운자로 수량 요약
+            </button>
+            <button onclick="runQuickPrompt('도쿄 추천')" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 hover:bg-indigo-500/20 text-indigo-300 border border-slate-700 transition cursor-pointer">
+              🗼 도쿄 추천
             </button>
           </div>
 
@@ -893,6 +900,11 @@
         }
       }
 
+      // Tokyo recommendation (works with or without Gemini key)
+      if (norm.includes('추천') || norm.includes('일루미')) {
+        return buildTokyoBriefing();
+      }
+
       // Chan-il settlement completion
       if (norm.includes('찬일') && (norm.includes('완료') || norm.includes('받았') || norm.includes('끝'))) {
         const todo = state.todos.find(t => t.text.includes('찬일'));
@@ -913,6 +925,10 @@
       const totalReserved = state.sales.filter(s => s.status === '예약중').reduce((a, b) => a + Number(b.price || 0), 0);
       const remainAmount = totalGoal - totalSold;
       const pendingTodos = state.todos.filter(t => !t.done);
+
+      if (msg.includes('추천') || msg.includes('일루미') || msg.includes('어디')) {
+        return buildTokyoBriefing();
+      }
 
       if (msg.includes('판매') || msg.includes('잔여') || msg.includes('금액')) {
         return `💰 **중고 장비 판매 파이프라인 요약**\n• 목표 총액: **${totalGoal.toLocaleString()}만 원** (${state.sales.length}종)\n• 판매 완료: **${totalSold.toLocaleString()}만 원**\n• 예약 진행: **${totalReserved.toLocaleString()}만 원**\n• **잔여 회수 목표: ${remainAmount.toLocaleString()}만 원**`;
@@ -963,6 +979,100 @@
     function removeElement(id) {
       const el = document.getElementById(id);
       if (el) el.remove();
+    }
+
+
+    // =========================================================================
+    // 4.5 TOKYO ILLUMINATION RECOMMENDER (JST 기준 + Google Maps)
+    // =========================================================================
+    const TOKYO_SPOTS = [
+      { id: 'roppongi', name: '롯폰기 힐스 게야키자카', q: '六本木けやき坂通り', start: '2026-11-05', end: '2026-12-25', open: 17, close: 22, area: '롯폰기', tip: '도쿄타워 뷰 · 크리스마스 마켓 ~21시' },
+      { id: 'midtown', name: '도쿄 미드타운', q: '東京ミッドタウン', start: '2026-11-26', end: '2026-12-25', area: '롯폰기', tip: '롯폰기 힐스와 같은 롯폰기 권역' },
+      { id: 'marunouchi', name: '마루노우치 나카도리', q: '丸の内仲通り', start: '2026-11-12', end: '2027-02-14', area: '도쿄역', tip: 'KITTE와 묶어서 보기 좋음' },
+      { id: 'kitte', name: 'WHITE KITTE', q: 'KITTE丸の内', start: '2026-11-19', end: '2026-12-25', area: '도쿄역', tip: '도쿄역 마루노우치 출구 앞' },
+      { id: 'ebisu', name: '에비스 가든 플레이스', q: '恵比寿ガーデンプレイス', start: '2026-11-14', end: '2027-02-28', area: '에비스', tip: '바카라 샹들리에는 1/11까지' },
+      { id: 'omotesando', name: '오모테산도 힐스·가로수길', q: '表参道ヒルズ', start: '2026-12-01', end: '2026-12-27', area: '오모테산도', tip: '신주쿠에서 가까움' },
+      { id: 'shibuya', name: '푸른 동굴 시부야', q: '青の洞窟 SHIBUYA 代々木公園', start: '2026-12-11', end: '2026-12-27', area: '시부야', tip: '' },
+      { id: 'ueno', name: '우에노 크리스마스 어드벤트', q: '上野恩賜公園', start: '2026-11-06', end: '2026-12-25', area: '우에노', tip: '' }
+    ];
+
+    const mapSearchUrl = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+    const mapDirUrl = q => 'https://www.google.com/maps/dir/?api=1&travelmode=transit&destination=' + encodeURIComponent(q);
+
+    function getJstNow() {
+      const d = new Date(Date.now() + 9 * 3600 * 1000);
+      const ymd = d.toISOString().slice(0, 10);
+      return { ymd, hour: d.getUTCHours(), min: d.getUTCMinutes(), md: `${d.getUTCMonth() + 1}/${d.getUTCDate()}` };
+    }
+
+    function getTokyoRecommendations() {
+      const now = getJstNow();
+      const list = TOKYO_SPOTS.map(s => {
+        let state, label, rank;
+        if (now.ymd < s.start) {
+          state = 'soon'; label = `${Number(s.start.slice(5, 7))}/${Number(s.start.slice(8))} 시작`; rank = 3;
+        } else if (now.ymd > s.end) {
+          state = 'ended'; label = '이번 시즌 종료'; rank = 4;
+        } else if (s.open != null) {
+          if (now.hour >= s.open && now.hour < s.close) { state = 'live'; label = `지금 점등 중 (~${s.close}:00)`; rank = 0; }
+          else if (now.hour < s.open) { state = 'today'; label = `오늘 ${s.open}:00 점등`; rank = 1; }
+          else { state = 'today'; label = '오늘 소등 · 내일 다시'; rank = 2; }
+        } else {
+          state = 'today'; label = '오늘 진행 중 · 점등 시간 확인'; rank = 1;
+        }
+        return { ...s, state, label, rank };
+      }).sort((a, b) => a.rank - b.rank);
+
+      const active = id => list.find(s => s.id === id && (s.state === 'live' || s.state === 'today'));
+      const courses = [];
+      if (active('roppongi') && active('midtown')) courses.push({ title: '롯폰기 코스', path: '게야키자카 → 도쿄 미드타운', q: '六本木ヒルズ' });
+      if (active('marunouchi') && active('kitte')) courses.push({ title: '도쿄역 코스', path: '마루노우치 나카도리 → WHITE KITTE', q: '丸の内仲通り' });
+      return { now, list, courses };
+    }
+
+    function renderTokyoRecommend(showToastMsg) {
+      const box = document.getElementById('tokyoRecommend');
+      if (!box) return;
+      const { now, list, courses } = getTokyoRecommendations();
+      document.getElementById('tokyoNowText').textContent = `일본 ${now.md} ${String(now.hour).padStart(2, '0')}:${String(now.min).padStart(2, '0')} 기준`;
+
+      document.getElementById('tokyoCourse').innerHTML = courses.map(c => `
+        <div class="flex items-center justify-between gap-2 p-2.5 mb-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <div class="text-[11px] text-amber-200"><strong>⭐ 추천 ${escapeHtml(c.title)}:</strong> ${escapeHtml(c.path)}</div>
+          <a href="${mapDirUrl(c.q)}" target="_blank" rel="noopener" class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500 text-slate-950">🧭 출발</a>
+        </div>`).join('');
+
+      const colors = {
+        live: 'border-emerald-500/40 bg-emerald-500/5', today: 'border-sky-500/30',
+        soon: 'border-slate-800 opacity-60', ended: 'border-slate-800 opacity-40'
+      };
+      const badge = {
+        live: 'bg-emerald-500/20 text-emerald-300', today: 'bg-sky-500/15 text-sky-300',
+        soon: 'bg-slate-800 text-slate-400', ended: 'bg-slate-800 text-slate-500'
+      };
+      box.innerHTML = list.map(s => `
+        <div class="p-2.5 rounded-lg bg-slate-950/60 border ${colors[s.state]} flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] font-bold text-white">${escapeHtml(s.name)}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${badge[s.state]}">${escapeHtml(s.label)}</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(s.area)}${s.tip ? ' · ' + escapeHtml(s.tip) : ''}</div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <a href="${mapSearchUrl(s.q)}" target="_blank" rel="noopener" class="px-1.5 py-1 rounded-md text-[10px] font-bold bg-slate-800 text-sky-300 border border-slate-700" title="구글지도">🗺️</a>
+            <a href="${mapDirUrl(s.q)}" target="_blank" rel="noopener" class="px-1.5 py-1 rounded-md text-[10px] font-bold bg-slate-800 text-amber-300 border border-slate-700" title="대중교통 길찾기">🧭</a>
+          </div>
+        </div>`).join('');
+      if (showToastMsg) showToast('일본 현재 시각 기준으로 추천을 갱신했습니다.', 'success');
+    }
+
+    function buildTokyoBriefing() {
+      const { now, list, courses } = getTokyoRecommendations();
+      const go = list.filter(s => s.state === 'live' || s.state === 'today');
+      const lines = go.map(s => `• ${s.name} — ${s.label}`).join('\n') || '• 오늘 진행 중인 곳이 없습니다.';
+      const courseLine = courses.length ? '\n\n⭐ 추천 코스\n' + courses.map(c => `• ${c.title}: ${c.path}`).join('\n') : '';
+      return `🗼 **도쿄 일루미네이션 추천** (일본 ${now.md} ${String(now.hour).padStart(2, '0')}:${String(now.min).padStart(2, '0')})\n${lines}${courseLine}\n\n👉 각 장소의 🗺️/🧭 버튼은 대시보드 '4. 일본 출장' 섹션에서 바로 구글지도로 열 수 있습니다.`;
     }
 
     // =========================================================================
@@ -1074,6 +1184,8 @@
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       renderAll();
+      renderTokyoRecommend();
+      setInterval(renderTokyoRecommend, 60000);
       updateCountdown();
       setInterval(updateCountdown, 1000);
     });
